@@ -153,7 +153,7 @@ class Student:
     def add_students(self):
 
         if self.roll_no.get()=="" or self.name_var.get()=="":
-            messagebox.showerror("ERRoR","All fields are required !!")
+            messagebox.showerror("ERROR","All fields are required !!")
         else:
 
 
@@ -166,7 +166,7 @@ class Student:
             # self.fetch_data()
             self.clear_all()
             con.close()
-            messagebox.showinfo("Success","recod added")
+            messagebox.showinfo("Success","record added")
 
 
     def fetch_data(self):

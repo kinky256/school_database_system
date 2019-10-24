@@ -41,23 +41,22 @@ class Credentials(Frame):
         """ Open database GUI"""
         # if credentials are correct
         try:
-            Student(self.root,self.username.get(), self.password.get())
-            root.destroy()
+            self.main_root = Tk()
+            Student(self.main_root,self.username.get(), self.password.get())
+            self.root.destroy()
         except:
             main()
-        pass
+        
 
     def cancel(self):
-        """Destroy window all together. """
+        """Destroy windows all together. """
         self.root.destroy()
+        sys.exit()
         
 
 def main():
     """Interact with class """
-    root = Tk() # the main window
-    # ob = Student(root)
-
-    # top = Toplevel() # top level window that appears 
+    root = Tk()
     root.title("Login to School Database")
     root.geometry("500x205")
     app = Credentials(root,root)
