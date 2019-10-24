@@ -236,28 +236,3 @@ class Student:
         con.close()
 
 
-def main():
-    """Interact with class and create login window """
-
-    root = Tk()
-    top  = Toplevel()
-
-    entry1 = Entry(top)  # Username entry
-    entry2 = Entry(top)  # Password entry
-    button1 = Button(top, text="Login", command=lambda: command1())  # Login button
-    button2 = Button(top, text="Cancel",command=lambda: command2())  # Cancel button
-    ob = Student(root)
-    root.mainloop()
-
-
-def login():
-    """Destroy top window and show database. """
-    # try:
-        
-    # except expression as identifier:
-    #     pass
-    pass
-
-def Cancel():
-    """System exit """
-    pass
