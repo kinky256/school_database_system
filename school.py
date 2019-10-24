@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 from tkinter import *
 from tkinter import ttk
 import pymysql.cursors
 import pymysql
 from tkinter import messagebox
+
+
 class Student:
-    def __init__(self,root):
+    def __init__(self,root, username, user_password):
         self.root = root
         self.root.title("STUDENT MANAGEMENT System")
+        self.username = username
+        self.user_password = user_password
         self.root.geometry("1350x700+0+0")
 
         title = Label(self.root,text="Student Management System",
@@ -82,9 +83,9 @@ class Student:
         btn_Frame = Frame(manage_Frame,bd=4,relief=RIDGE,bg="crimson")
         btn_Frame.place(x=0,y=500,width=470)
 
-        Add_btn = Button(btn_Frame,text ="Add",width=10,command=self.add_students).grid(row=0,column=0,padx=10,pady=10)
-        update_btn = Button(btn_Frame,text ="Update",width=10,command=self.update_data).grid(row=0,column=1,padx=10,pady=10)
-        delete_btn = Button(btn_Frame,text ="Delete",width=10,command=self.delete_data).grid(row=0,column=2,padx=10,pady=10)
+        Add_btn = Button(btn_Frame,text ="Add",width=10).grid(row=0,column=0,padx=10,pady=10)
+        update_btn = Button(btn_Frame,text ="Update",width=10).grid(row=0,column=1,padx=10,pady=10)
+        delete_btn = Button(btn_Frame,text ="Delete",width=10).grid(row=0,column=2,padx=10,pady=10)
         clear_btn = Button(btn_Frame,text ="Clear",width=9,command=self.clear_all).grid(row=0,column=3,padx=10,pady=10)
 
         #>>>>>>>>>>>Details Frame>>>>>>>>>>>>>>>>>>>
@@ -113,8 +114,8 @@ class Student:
         txt_search.grid(row=0,column=2,padx=20,pady=10,sticky="w")
 
 
-        searchbtn = Button(Detail_Frame,text ="Search",width=10,pady=5,command=self.search_data).grid(row=0,column=3,padx=10,pady=10)
-        showallbtn = Button(Detail_Frame,text ="Show All",width=10,pady=5,command=self.fetch_data).grid(row=0,column=4,padx=10,pady=10)
+        searchbtn = Button(Detail_Frame,text ="Search",width=10,pady=5).grid(row=0,column=3,padx=10,pady=10)
+        showallbtn = Button(Detail_Frame,text ="Show All",width=10,pady=5).grid(row=0,column=4,padx=10,pady=10)
 
         #>>>>>>>>>>>Table Frame>>>>>>>>>>>>>>>>>>>
         Table_Frame = Frame(Detail_Frame,bd=4,relief=RIDGE,bg="crimson")
@@ -145,7 +146,7 @@ class Student:
 
         self.Student_table.pack(fill=BOTH,expand=1)
         self.Student_table.bind("<ButtonRelease-1>",self.get_cursor)
-        self.fetch_data()
+        # self.fetch_data()
 
 
 
@@ -156,20 +157,20 @@ class Student:
         else:
 
 
-            con=pymysql.connect(host="localhost",user="root",password="",database="stm",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
+            con=pymysql.connect(host="localhost",user=self.username,password= self.user_password,database="stm",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
             cur=con.cursor()
             cur.execute("insert into students values(%s,%s,%s,%s)",(self.roll_no.get(),
                         self.name_var.get(),
                         self.email_var.get(),self.gender_var.get()))
             con.commit()
-            self.fetch_data()
+            # self.fetch_data()
             self.clear_all()
             con.close()
             messagebox.showinfo("Success","recod added")
 
 
     def fetch_data(self):
-        con=pymysql.connect(host="localhost",user="root",password="",database="stm")
+        con=pymysql.connect(host="localhost",user=self.username, password= self.user_password, database="stm")
         cur=con.cursor()
         cur.execute("SELECT * FROM students")
         rows=cur.fetchall()
@@ -200,29 +201,29 @@ class Student:
         self.gender_var.set(row[3])
 
     def update_data(self):
-        con=pymysql.connect(host="localhost",user="root",password="",database="stm")
+        con=pymysql.connect(host="localhost",user=self.username, password= self.user_password, database="stm")
         cur=con.cursor()
         cur.execute("update students set name=%s,email=%s,gender=%s WHERE roll_no=%s",(self.name_var.get(),
                     self.email_var.get(),self.gender_var.get(),self.roll_no.get(),
                     ))
 
         con.commit()
-        self.fetch_data()
+        # self.fetch_data()
         self.clear_all()
         con.close()
 
     def delete_data(self):
-        con=pymysql.connect(host="localhost",user="root",password="",database="stm")
+        con=pymysql.connect(host="localhost", user=self.username, password=self.user_password, database="stm")
         cur=con.cursor()
         cur.execute("delete  FROM students WHERE roll_no=%s",self.roll_no.get())
         con.commit()
         con.close()
 
-        self.fetch_data()
+        # self.fetch_data()
         self.clear()
 
     def search_data(self):
-        con=pymysql.connect(host="localhost",user="root",password="",database="stm")
+        con=pymysql.connect(host="localhost", user=self.username, password=self.user_password, database="stm")
         cur=con.cursor()
         cur.execute("SELECT * FROM students WHERE "+str(self.searchby.get())+" LIKE '%"+str(self.search_txt.get())+"%'")
         rows=cur.fetchall()
@@ -235,15 +236,28 @@ class Student:
         con.close()
 
 
+def main():
+    """Interact with class and create login window """
+
+    root = Tk()
+    top  = Toplevel()
+
+    entry1 = Entry(top)  # Username entry
+    entry2 = Entry(top)  # Password entry
+    button1 = Button(top, text="Login", command=lambda: command1())  # Login button
+    button2 = Button(top, text="Cancel",command=lambda: command2())  # Cancel button
+    ob = Student(root)
+    root.mainloop()
 
 
+def login():
+    """Destroy top window and show database. """
+    # try:
+        
+    # except expression as identifier:
+    #     pass
+    pass
 
-
-
-
-
-
-
-root = Tk()
-ob = Student(root)
-root.mainloop()
+def Cancel():
+    """System exit """
+    pass
