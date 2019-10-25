@@ -3,3 +3,6 @@
 
 # environment
 .venv
+
+# config
+__pycache__

@@ -58,8 +58,9 @@ class Credentials(Frame):
                 self.root.destroy()
 
         except pymysql.MySQLError as e:
-            #incorrect credentials.Create pop up with error
-            logging.error(e)
+            # wrong password
+            self.incorrect_pass_label = Label(self, text="Wrong credentials")
+            self.incorrect_pass_label.grid(row=12,column=3, columnspan=2,rowspan=4, sticky=W)
             # main()
         finally:
             if self.conn:
