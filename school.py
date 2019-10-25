@@ -11,6 +11,8 @@ from tkinter import messagebox
 
 
 class Student:
+    """Class management GUI. """
+    
     def __init__(self,root, conn):
         self.root = root
         self.root.title("STUDENT MANAGEMENT System")
@@ -151,6 +153,7 @@ class Student:
 
 
     def add_students(self):
+        """Add a new student(s) """
 
         if self.roll_no.get()=="" or self.name_var.get()=="":
             messagebox.showerror("ERROR","All fields are required !!")
