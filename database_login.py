@@ -1,6 +1,8 @@
 
 from tkinter import *
 import sys
+import logging
+import pymysql
 from school import Student
 
 # global instance
@@ -15,6 +17,7 @@ class Credentials(Frame):
         """ Initiaize frame"""
         super(Credentials, self).__init__(master)
         self.root = root
+        self.conn = None
         self.grid()
         self.create_widgets()
 
@@ -38,14 +41,31 @@ class Credentials(Frame):
         self.login_button.grid(row=10, column=5)
     
     def login(self):
-        """ Open database GUI"""
-        # if credentials are correct
+        """ Open database GUI if credentials are correct"""
+    
         try:
-            self.main_root = Tk()
-            Student(self.main_root,self.username.get(), self.password.get())
-            self.root.destroy()
-        except:
-            main()
+            if self.conn is None:
+                self.conn = pymysql.connect(host="localhost",
+                                            user=self.username.get(),
+                                            password=self.password.get(),
+                                            # database="stm",
+                                            database="cookbook",
+                                            charset='utf8mb4',
+                                            cursorclass=pymysql.cursors.DictCursor)
+                
+                self.main_root = Tk()
+                Student(self.main_root, self.conn)
+                self.root.destroy()
+
+        except pymysql.MySQLError as e:
+            # wrong password
+            self.incorrect_pass_label = Label(self, text="Wrong credentials")
+            self.incorrect_pass_label.grid(row=12,column=3, columnspan=2,rowspan=4, sticky=W)
+            # main()
+        finally:
+            if self.conn:
+                self.conn.close()
+                self.conn = None
         
 
     def cancel(self):

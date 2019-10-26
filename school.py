@@ -3,17 +3,20 @@
 
 from tkinter import *
 from tkinter import ttk
+import logging
+import sys
 import pymysql.cursors
 import pymysql
 from tkinter import messagebox
 
 
 class Student:
-    def __init__(self,root, username, user_password):
+    """Class management GUI. """
+    
+    def __init__(self,root, conn):
         self.root = root
         self.root.title("STUDENT MANAGEMENT System")
-        self.username = username
-        self.user_password = user_password
+        self.conn = conn
         self.root.geometry("1350x700+0+0")
 
         title = Label(self.root,text="Student Management System",
@@ -149,38 +152,37 @@ class Student:
         # self.fetch_data()
 
 
-
     def add_students(self):
+        """Add a new student(s) """
 
         if self.roll_no.get()=="" or self.name_var.get()=="":
             messagebox.showerror("ERROR","All fields are required !!")
         else:
 
-
-            con=pymysql.connect(host="localhost",user=self.username,password= self.user_password,database="stm",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
-            cur=con.cursor()
-            cur.execute("insert into students values(%s,%s,%s,%s)",(self.roll_no.get(),
+            with self.conn.cursor as cur:
+                cur.execute("insert into students values(%s,%s,%s,%s)",(self.roll_no.get(),
                         self.name_var.get(),
                         self.email_var.get(),self.gender_var.get()))
-            con.commit()
-            # self.fetch_data()
-            self.clear_all()
-            con.close()
+                self.conn.commit()
+                # self.fetch_data()
+                self.clear_all()
+                cur.close()
+    
             messagebox.showinfo("Success","record added")
 
 
     def fetch_data(self):
-        con=pymysql.connect(host="localhost",user=self.username, password= self.user_password, database="stm")
-        cur=con.cursor()
-        cur.execute("SELECT * FROM students")
-        rows=cur.fetchall()
-        if len(rows)!=0:
-            self.Student_table.delete(*self.Student_table.get_children())
-            for row in rows:
-                self.Student_table.insert('',END,values=row)
+        """Retrieve all students from the student table. """
+        with self.conn.cursor as cur:
+            cur.execute("SELECT * FROM students")
+            rows=cur.fetchall()
+            if len(rows)!=0:
+                self.Student_table.delete(*self.Student_table.get_children())
+                for row in rows:
+                    self.Student_table.insert('',END,values=row)
 
-            con.commit()
-        con.close()
+                self.conn.commit()
+        
 
     def clear_all(self):
         self.roll_no.set("")
@@ -203,36 +205,36 @@ class Student:
     def update_data(self):
         con=pymysql.connect(host="localhost",user=self.username, password= self.user_password, database="stm")
         cur=con.cursor()
-        cur.execute("update students set name=%s,email=%s,gender=%s WHERE roll_no=%s",(self.name_var.get(),
-                    self.email_var.get(),self.gender_var.get(),self.roll_no.get(),
-                    ))
+        with self.conn.cursor as cur:
+            cur.execute("update students set name=%s,email=%s,gender=%s WHERE roll_no=%s",(self.name_var.get(),
+                        self.email_var.get(),self.gender_var.get(),self.roll_no.get(),
+                        ))
 
-        con.commit()
-        # self.fetch_data()
-        self.clear_all()
-        con.close()
+            self.conn.commit()
+            # self.fetch_data()
+            self.clear_all()
+        
 
     def delete_data(self):
-        con=pymysql.connect(host="localhost", user=self.username, password=self.user_password, database="stm")
-        cur=con.cursor()
-        cur.execute("delete  FROM students WHERE roll_no=%s",self.roll_no.get())
-        con.commit()
-        con.close()
-
+        """Delete an occurence of a student. """
+        with self.conn.cursor as cur:
+            cur.execute("delete  FROM students WHERE roll_no=%s",self.roll_no.get())
+            self.conn.commit()
+            
         # self.fetch_data()
-        self.clear()
+        self.clear() #? where does this fall
 
     def search_data(self):
-        con=pymysql.connect(host="localhost", user=self.username, password=self.user_password, database="stm")
-        cur=con.cursor()
-        cur.execute("SELECT * FROM students WHERE "+str(self.searchby.get())+" LIKE '%"+str(self.search_txt.get())+"%'")
-        rows=cur.fetchall()
-        if len(rows)!=0:
-            self.Student_table.delete(*self.Student_table.get_children())
-            for row in rows:
-                self.Student_table.insert('',END,values=row)
+        """Search for a student based on selected criteria """
+        with self.conn.cursor as cur:
+            cur.execute("SELECT * FROM students WHERE "+str(self.searchby.get())+" LIKE '%"+str(self.search_txt.get())+"%'")
+            rows=cur.fetchall()
+            if len(rows)!=0:
+                self.Student_table.delete(*self.Student_table.get_children())
+                for row in rows:
+                    self.Student_table.insert('',END,values=row)
 
-            con.commit()
-        con.close()
+                self.conn.commit()
+        
 
 
